@@ -37,10 +37,10 @@ def noise_freq(freq_list,noise_data_path,pts):
         NL_t.append(Nmatrix)
     return(np.array(NL_t))
 
-def CL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r):
+def CL(theta,fg_parameters,pts,freq_list,N,mnu,omk,r):
 
     d = so_dict.so_dict()
-    d.read_from_file(dict_path+"global_healpix_example.dict")
+    d.read_from_file("global_healpix_example.dict")
     fg_norm = d["fg_norm"]
     components = {"tt": d["fg_components"],"ee": [],"te": []}
     fg_model = {"normalisation": fg_norm,"components": components}
@@ -70,7 +70,7 @@ def CL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r):
         CL.append(Cmatrix)
     return(np.array(CL))
 
-def dCL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r):
+def dCL(theta,fg_parameters,pts,freq_list,N,mnu,omk,r):
     length1 = len(theta)
     length2 = len(fg_parameters)
     epsilon_theta = theta/100
@@ -79,26 +79,26 @@ def dCL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r):
     for i in range(length1):
         eps = epsilon_theta[i]*np.eye(1,length1,i)
         eps = eps.flatten()
-        CL_plus = CL(theta+eps,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r)
-        CL_moins = CL(theta-eps,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r)
+        CL_plus = CL(theta+eps,fg_parameters,pts,freq_list,N,mnu,omk,r)
+        CL_moins = CL(theta-eps,fg_parameters,pts,freq_list,N,mnu,omk,r)
         der = (CL_plus-CL_moins)/(2*epsilon_theta[i])
         var_temp.append(der)
     for j in range(length2):
         eps = epsilon_fg[j]*np.eye(1,length2,j)
         eps = eps.flatten()
-        CL_plus = CL(theta,fg_parameters+eps,pts,freq_list,dict_path,N,mnu,omk,r)
-        CL_moins = CL(theta,fg_parameters-eps,pts,freq_list,dict_path,N,mnu,omk,r)
+        CL_plus = CL(theta,fg_parameters+eps,pts,freq_list,N,mnu,omk,r)
+        CL_moins = CL(theta,fg_parameters-eps,pts,freq_list,N,mnu,omk,r)
         der = (CL_plus-CL_moins)/(2*epsilon_fg[j])
         var_temp.append(der)
     return(var_temp)
 
-def pre_calculation(theta,fg_parameters,pts,freq_list,dict_path,noise_data_path,mnu,omk,r,save_path,names):
+def pre_calculation(theta,fg_parameters,pts,freq_list,noise_data_path,mnu,omk,r,save_path,names):
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
     N = noise_freq(freq_list,noise_data_path,pts)
     np.save(save_path+'noise',N)
-    Cl = CL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r)
+    Cl = CL(theta,fg_parameters,pts,freq_list,N,mnu,omk,r)
     np.save(save_path+'CL',Cl)
-    deriv = dCL(theta,fg_parameters,pts,freq_list,dict_path,N,mnu,omk,r)
+    deriv = dCL(theta,fg_parameters,pts,freq_list,N,mnu,omk,r)
     for i in range(len(names)):
         np.save(save_path+'deriv_'+names[i],deriv[i])
