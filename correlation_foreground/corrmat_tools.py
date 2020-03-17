@@ -5,9 +5,6 @@ import camb
 from camb import model,initialpower
 from toolbox import *
 from pspy import pspy_utils, so_dict
-from itertools import combinations_with_replacement as cwr
-import so_noise_calculator_public_20180822 as noise_calc
-from copy import deepcopy
 import mflike as mfl
 import time
 
