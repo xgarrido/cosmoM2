@@ -25,10 +25,19 @@ pts = 4449
 ################################################################################
 
 calculate_data = False
+plot_correlation = False
+plot_fisher = False
+plot_cosmo_parameters = True
 
 if calculate_data:
     from pre_calc_corr import *
     pre_calculation(planck_parameters,fg_parameters,pts,frequency_list,noise_data_path,mnu,omk,r,cl_path,names)
 
-corrmat_evol(frequency_list,name_param_corrmat,save_path,fsky,names,cl_path)
-norm_fisher(frequency_list[:1],fsky,names,cl_path)
+if plot_correlation:
+    corrmat_evol(frequency_list,name_param_corrmat,save_path,fsky,names,cl_path)
+
+if plot_fisher:
+    fisher_norm_evol(frequency_list,name_param_corrmat,save_path,fsky,names,cl_path)
+
+if plot_cosmo_parameters:
+    cosmo_parameters(planck_parameters,frequency_list,name_param_corrmat,save_path)
