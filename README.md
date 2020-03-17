@@ -1,7 +1,7 @@
 # M2 Internship
 
 ### Correlation matrix with foregrounds
-  - A plot showing the evolution of the correlation matrix for the 6 cosmological parameters and 7 foreground parameters could be done with : `launch_corrmat.py`.
+  - A plot showing the evolution of the correlation matrix for the 6 cosmological parameters and 7 foreground parameters could be done with : `launch_corrmat.py` in the correlation_foreground directory.
 
   Datas (Power spectrum, its derivatives and noises) are pre-generated with `pre_calc_corr.py` for a set of given parameters.
   These parameters are given in a list in the `launch_corrmat.py` script.
