@@ -1,11 +1,9 @@
 import sys, platform, os
 import matplotlib.pyplot as plt
 import numpy as np
-import camb
-from camb import model,initialpower
 from toolbox import *
 from corrmat_tools import *
-from pre_calc_corr import *
+
 
 #path = "/home/pspipe/workspace/PSpipe/project/maps2params/test/"
 noise_data_path = "sim_data/noise_tot_test/"
@@ -29,6 +27,8 @@ pts = 4449
 calculate_data = False
 
 if calculate_data:
+    from pre_calc_corr import *
     pre_calculation(planck_parameters,fg_parameters,pts,frequency_list,noise_data_path,mnu,omk,r,cl_path,names)
 
 corrmat_evol(frequency_list,name_param_corrmat,save_path,fsky,names,cl_path)
+norm_fisher(frequency_list[:1],fsky,names,cl_path)

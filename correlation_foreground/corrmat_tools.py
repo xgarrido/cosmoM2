@@ -1,11 +1,7 @@
 import sys, platform, os
 import matplotlib.pyplot as plt
 import numpy as np
-import camb
-from camb import model,initialpower
 from toolbox import *
-from pspy import pspy_utils, so_dict
-import mflike as mfl
 import time
 
 def fisher(freq_list,fsky,names,cl_path):
@@ -33,10 +29,21 @@ def constraints(freq_list,fsky,names,cl_path):
     C = np.linalg.inv(F)
     return(C)
 
+def norm_fisher(freq_list,fsky,names,cl_path):
+    F = fisher(freq_list,fsky,names,cl_path)
+    norm_F = cov2corr(F,remove_diag=False)
+    eigen = np.linalg.eigvals(F)
+    print("\n")
+    print("Normalized Fisher Matrix : ",norm_F)
+    print("\n")
+    print("Eigenvalues : ",eigen)
+
 def corrmat_evol(freq_list,name_param,save_path,fsky,names,cl_path):
     fig = plt.figure(figsize=(24,13.5))
 
     for i in range(len(freq_list)):
+        print("\n")
+        print("-"*15)
         print("Debut de la boucle a %s frequences" %(i+1))
         start_time_boucle = time.time()
         covar = constraints(freq_list[:i+1],fsky,names,cl_path)
@@ -50,6 +57,7 @@ def corrmat_evol(freq_list,name_param,save_path,fsky,names,cl_path):
         ax.set_yticklabels(name_param)
         ax.set_title(r'f = '+str(freq_list[:i+1]))
         print("Fin de la boucle, temps d'execution : %s secondes" % (time.time() - start_time_boucle))
+        print("-"*15)
     cb_ax = fig.add_axes([0.92, 0.1, 0.02, 0.8])
     cbar = fig.colorbar(im, cax=cb_ax)
 
