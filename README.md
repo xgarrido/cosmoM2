@@ -8,6 +8,4 @@
 
   If you need to generate again the datas, you just have to set the `calculate_data` variable to `True`.
 
-  Executing the script `launch_corrmat.py` will save some figures and the covariance matrix for each size of the frequency_list in `/Figures/fisher_fg`.
-
-  
+  Executing the script `launch_corrmat.py` will save some figures and the covariance matrix for each size of the frequency list in `/Figures/fisher_fg`.
