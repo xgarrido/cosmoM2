@@ -7,8 +7,6 @@ import time
 def fisher(freq_list,fsky,names,cl_path):
     start_time = time.time()
     deriv = [np.load(cl_path+"deriv_"+names[i]+".npy") for i in range(len(names))]
-    print(deriv[12][0][:2,:2])
-    sys.exit()
     C_ell = np.load(cl_path+"CL.npy")
     print("Importation : %s secondes" % (time.time() - start_time))
     lenght = len(deriv)
@@ -29,7 +27,6 @@ def fisher(freq_list,fsky,names,cl_path):
 def constraints(freq_list,fsky,names,cl_path):
     F = fisher(freq_list,fsky,names,cl_path)
     print(np.linalg.eigvals(F))
-    print(F[-3:,-3:])
     C = np.linalg.inv(F)
     return(C)
 

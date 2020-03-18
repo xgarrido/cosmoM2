@@ -33,7 +33,7 @@ ell_max = 4500
 
 ################################################################################
 
-calculate_data = False
+calculate_data = True
 plot_correlation = True
 plot_fisher = False
 plot_cosmo_parameters = True

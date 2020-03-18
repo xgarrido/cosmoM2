@@ -24,10 +24,10 @@ def noise_freq(freq_list,noise_data_path,ell_max):
 
     return(np.array(noise_list_matrix))
 
-def CL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r):
+def CL(theta,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r):
 
     d = so_dict.so_dict()
-    d.read_from_file(dict_path+"global_healpix_example.dict")
+    d.read_from_file("global_healpix_example.dict")
     fg_norm = d["fg_norm"]
     components = {"tt": d["fg_components"],"ee": [],"te": []}
     fg_model = {"normalisation": fg_norm,"components": components}
@@ -62,7 +62,7 @@ def CL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk
 
     return(np.array(power_spectrum_matrix))
 
-def dCL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r):
+def dCL(theta,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r):
 
     length_cosmo = len(theta)
     length_fg = len(fg_parameters)
@@ -73,22 +73,22 @@ def dCL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,om
     for i in range(length_cosmo):
         eps = epsilon_cosmo[i]*np.eye(1,length_cosmo,i)
         eps = eps.flatten()
-        CL_plus = CL(theta+eps,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
-        CL_moins = CL(theta-eps,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
+        CL_plus = CL(theta+eps,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
+        CL_moins = CL(theta-eps,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
         der = (CL_plus-CL_moins)/(2*epsilon_cosmo[i])
         var_temp.append(der)
 
     for j in range(length_fg):
         eps = epsilon_fg[j]*np.eye(1,length_fg,j)
         eps = eps.flatten()
-        CL_plus = CL(theta,fg_parameters+eps,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
-        CL_moins = CL(theta,fg_parameters-eps,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
+        CL_plus = CL(theta,fg_parameters+eps,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
+        CL_moins = CL(theta,fg_parameters-eps,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
         der = (CL_plus-CL_moins)/(2*epsilon_fg[j])
         var_temp.append(der)
 
     return(var_temp)
 
-def pre_calculation(theta,fg_parameters,ell_max,freq_list,dict_path,noise_data_path,mnu,omk,r,save_path,names):
+def pre_calculation(theta,fg_parameters,ell_max,freq_list,noise_data_path,mnu,omk,r,save_path,names):
 
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
@@ -96,9 +96,9 @@ def pre_calculation(theta,fg_parameters,ell_max,freq_list,dict_path,noise_data_p
     noise_list_matrix = noise_freq(freq_list,noise_data_path,ell_max)
     np.save(save_path+'noise',noise_list_matrix)
 
-    power_spectrums = CL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
+    power_spectrums = CL(theta,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
     np.save(save_path+'CL',power_spectrums)
 
-    deriv = dCL(theta,fg_parameters,ell_max,freq_list,dict_path,noise_list_matrix,mnu,omk,r)
+    deriv = dCL(theta,fg_parameters,ell_max,freq_list,noise_list_matrix,mnu,omk,r)
     for i in range(len(names)):
         np.save(save_path+'deriv_'+names[i],deriv[i])
