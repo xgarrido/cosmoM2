@@ -25,7 +25,7 @@ pts = 4449
 ################################################################################
 
 calculate_data = False
-plot_correlation = False
+plot_correlation = True
 plot_fisher = False
 plot_cosmo_parameters = True
 
@@ -40,4 +40,4 @@ if plot_fisher:
     fisher_norm_evol(frequency_list,name_param_corrmat,save_path,fsky,names,cl_path)
 
 if plot_cosmo_parameters:
-    cosmo_parameters(planck_parameters,frequency_list,name_param_corrmat,save_path)
+    cosmo_parameters(planck_parameters,fg_parameters,frequency_list,name_param_corrmat,save_path)
