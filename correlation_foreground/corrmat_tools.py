@@ -26,6 +26,7 @@ def fisher(freq_list,fsky,names,cl_path):
 
 def constraints(freq_list,fsky,names,cl_path):
     F = fisher(freq_list,fsky,names,cl_path)
+    print(np.linalg.eigvals(F))
     C = np.linalg.inv(F)
     return(C)
 
@@ -42,7 +43,7 @@ def norm_fisher(freq_list,fsky,names,cl_path):
 def corrmat_evol(freq_list,name_param,save_path_fig,save_path_dat,fsky,names,cl_path):
     fig = plt.figure(figsize=(24,13.5))
     sig_mat = []
-    for i in range(len(freq_list)):
+    for i in range(1,len(freq_list)):
         print("\n")
         print("-"*15)
         print("Debut de la boucle a %s frequences" %(i+1))
@@ -100,7 +101,7 @@ def cosmo_parameters(theta,fg_parameters,freq_list,name_param,save_path_fig,save
     plt.rc('ytick',labelsize=14)
     colors = ['darkred','darkorange','darkgreen','darkblue','darkviolet']
     for i in range(len(theta)):
-        sigma = np.loadtxt(save_path_dat+"sigmas.dat")[1:,i]
+        sigma = np.loadtxt(save_path_dat+"sigmas.dat")[:,i]
         ax = fig.add_subplot(231+i)
         ax.grid(True,linestyle='--')
         abs = np.linspace(theta[i]-4*np.max(sigma),theta[i]+4*np.max(sigma),500)
@@ -118,7 +119,7 @@ def cosmo_parameters(theta,fg_parameters,freq_list,name_param,save_path_fig,save
     plt.rc('ytick',labelsize=14)
     colors = ['darkred','darkorange','darkgreen','darkblue','darkviolet']
     for i in range(len(fg_parameters)):
-        sigma = np.loadtxt(save_path_dat+"sigmas.dat")[1:,i+6]
+        sigma = np.loadtxt(save_path_dat+"sigmas.dat")[:,i+6]
         ax = fig.add_subplot(331+i)
         ax.grid(True,linestyle='--')
         abs = np.linspace(fg_parameters[i]-4*np.max(sigma),fg_parameters[i]+4*np.max(sigma),500)
