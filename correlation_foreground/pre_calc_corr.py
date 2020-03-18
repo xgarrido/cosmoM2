@@ -8,8 +8,10 @@ from pspy import pspy_utils, so_dict
 import mflike as mfl
 
 def noise_freq(freq_list, noise_data_path, ell_max):
+
     noise_list_diag = []
     n_freqs = len(freq_list)
+
     for freq in freq_list:
         noise_t_spectrum = np.loadtxt(noise_data_path+"noise_t_LAT_"+str(freq)+"xLAT_"+str(freq)+".dat")[:, 1][:ell_max-1]
         noise_list_diag.append(noise_t_spectrum)
@@ -24,7 +26,7 @@ def noise_freq(freq_list, noise_data_path, ell_max):
 
     return(np.array(noise_list_matrix))
 
-def get_cl_array(theta, fg_parameters, ell_max, freq_list, noise_list_matrix):
+def get_cl_array(cosmo_parameters, fg_parameters, ell_max, freq_list, noise_list_matrix):
 
     d = so_dict.so_dict()
     d.read_from_file("global_healpix_example.dict")
@@ -36,11 +38,12 @@ def get_cl_array(theta, fg_parameters, ell_max, freq_list, noise_list_matrix):
                     'T_d': 9.6}
 
     pars = camb.CAMBparams()
-    pars.set_cosmology(H0=theta[0], ombh2=theta[1], omch2=theta[2], mnu=0.06, omk=0, tau=theta[5])
-    pars.InitPower.set_params(As=theta[3], ns=theta[4], r=0)
-    pars.set_for_lmax(ell_max-1, lens_potential_accuracy=0)
+    pars.set_cosmology(H0 = cosmo_parameters[0], ombh2 = cosmo_parameters[1], omch2 = cosmo_parameters[2],
+                       mnu = 0.06, omk = 0, tau = cosmo_parameters[5])
+    pars.InitPower.set_params(As = 1e-10 * np.exp(cosmo_parameters[3]), ns = cosmo_parameters[4], r = 0 )
+    pars.set_for_lmax(ell_max - 1, lens_potential_accuracy = 0)
     results = camb.get_results(pars)
-    powers = results.get_cmb_power_spectra(pars, CMB_unit="muK")
+    powers = results.get_cmb_power_spectra(pars, CMB_unit = "muK")
     totCL=powers['total']
 
     TT = totCL[:, 0][2:]
@@ -64,33 +67,33 @@ def get_cl_array(theta, fg_parameters, ell_max, freq_list, noise_list_matrix):
 
     return(np.array(power_spectrum_matrix))
 
-def get_cl_derivatives(theta, fg_parameters, ell_max, freq_list, noise_list_matrix):
+def get_cl_derivatives(cosmo_parameters, fg_parameters, ell_max, freq_list, noise_list_matrix):
 
-    n_params_cosmo = len(theta)
+    n_params_cosmo = len(cosmo_parameters)
     n_params_fg = len(fg_parameters)
-    epsilon_cosmo = theta/100
+    epsilon_cosmo = cosmo_parameters/100
     epsilon_fg = fg_parameters/100
     var_temp = []
 
     for i in range(n_params_cosmo):
         eps = epsilon_cosmo[i]*np.eye(1, n_params_cosmo, i)
         eps = eps.flatten()
-        CL_plus = get_cl_array(theta+eps, fg_parameters, ell_max, freq_list, noise_list_matrix)
-        CL_moins = get_cl_array(theta-eps, fg_parameters, ell_max, freq_list, noise_list_matrix)
+        CL_plus = get_cl_array(cosmo_parameters+eps, fg_parameters, ell_max, freq_list, noise_list_matrix)
+        CL_moins = get_cl_array(cosmo_parameters -eps, fg_parameters, ell_max, freq_list, noise_list_matrix)
         der = (CL_plus-CL_moins)/(2*epsilon_cosmo[i])
         var_temp.append(der)
 
     for j in range(n_params_fg):
         eps = epsilon_fg[j]*np.eye(1, n_params_fg, j)
         eps = eps.flatten()
-        CL_plus = get_cl_array(theta, fg_parameters+eps, ell_max, freq_list, noise_list_matrix)
-        CL_moins = get_cl_array(theta, fg_parameters-eps, ell_max, freq_list, noise_list_matrix)
+        CL_plus = get_cl_array(cosmo_parameters , fg_parameters+eps, ell_max, freq_list, noise_list_matrix)
+        CL_moins = get_cl_array(cosmo_parameters , fg_parameters-eps, ell_max, freq_list, noise_list_matrix)
         der = (CL_plus-CL_moins)/(2*epsilon_fg[j])
         var_temp.append(der)
 
     return(var_temp)
 
-def pre_calculation(theta, fg_parameters, ell_max, freq_list, noise_data_path, save_path, names):
+def pre_calculation(cosmo_parameters , fg_parameters, ell_max, freq_list, noise_data_path, save_path, names):
 
     if not os.path.isdir(save_path):
         os.mkdir(save_path)
@@ -98,9 +101,9 @@ def pre_calculation(theta, fg_parameters, ell_max, freq_list, noise_data_path, s
     noise_list_matrix = noise_freq(freq_list, noise_data_path, ell_max)
     np.save(save_path+'noise', noise_list_matrix)
 
-    power_spectrums = get_cl_array(theta, fg_parameters, ell_max, freq_list, noise_list_matrix)
+    power_spectrums = get_cl_array(cosmo_parameters , fg_parameters, ell_max, freq_list, noise_list_matrix)
     np.save(save_path+'CL', power_spectrums)
 
-    deriv = get_cl_derivatives(theta, fg_parameters, ell_max, freq_list, noise_list_matrix)
+    deriv = get_cl_derivatives(cosmo_parameters , fg_parameters, ell_max, freq_list, noise_list_matrix)
     for i in range(len(names)):
         np.save(save_path+'deriv_'+names[i], deriv[i])

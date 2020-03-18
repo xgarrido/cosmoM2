@@ -37,6 +37,7 @@ def compute_fisher(freq_list, fsky,names, cl_path):
 def constraints(freq_list, fsky,names, cl_path):
 
     fisher = compute_fisher(freq_list, fsky, names, cl_path)
+    #print(fisher)
     print(np.linalg.eigvals(fisher))
     cov = np.linalg.inv(fisher)
 
@@ -47,6 +48,7 @@ def norm_fisher(freq_list, fsky, names, cl_path):
     fisher = compute_fisher(freq_list, fsky, names, cl_path)
     norm_fisher = cov2corr(fisher, remove_diag=False)
     eigen = np.linalg.eigvals(fisher)
+    print(np.linalg.eigvals(fisher))
     #print("\n")
     #print("Normalized Fisher Matrix : ",norm_F)
     #print("\n")
@@ -89,11 +91,11 @@ def corrmat_evol(freq_list, name_param, save_path_fig, save_path_dat, fsky,names
 
 def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names, cl_path):
 
-    n_freqs = freq_list
+    n_freqs = len(freq_list)
     for a in range(n_freqs):
-        fig = plt.figure(figsize=(24, 24))
-        plt.rc('xtick', labelsize=20)
-        plt.rc('ytick', labelsize=20)
+        fig = plt.figure(figsize=(16, 16))
+        plt.rc('xtick', labelsize=13.5)
+        plt.rc('ytick', labelsize=13.5)
         print("\n")
         print("-" * 15)
         print("Debut de la boucle a %s frequences" %(a + 1))
@@ -105,17 +107,17 @@ def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names, cl_path)
         ax.set_yticks(np.arange(0, len(name_param), 1));
         ax.set_xticklabels(name_param)
         ax.set_yticklabels(name_param)
-        ax.set_title(r'f = ' + str(freq_list[:a + 1]), fontsize=20)
+        ax.set_title(r'f = ' + str(freq_list[:a + 1]), fontsize=13.5)
         for i in range(len(Fnorm)):
             for j in range(len(Fnorm)):
                 ax.text(j, i, "{:0.3f}".format(Fnorm[i, j]), horizontalalignment="center",
-                     color="black",fontsize=20)
+                     color="black",fontsize=13.5)
         print("Fin de la boucle, temps d'execution : %s secondes" % (time.time() - start_time_boucle))
         print("-" * 15)
         fig.tight_layout()
         fig.savefig(save_path_fig + "fisher_norm_var" + str(a) + ".png",dpi=300)
 
-def cosmo_parameters(theta, fg_parameters, freq_list, name_param, save_path_fig, save_path_dat):
+def cosmo_parameters_variation(theta, fg_parameters, freq_list, name_param, save_path_fig, save_path_dat):
 
     fig = plt.figure(figsize=(24, 13.5))
     plt.rc('xtick', labelsize=14)
