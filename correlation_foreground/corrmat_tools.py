@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from toolbox import *
 import time
+import math
 
 def compute_fisher(freq_list, fsky,names, cl_path):
 
@@ -117,20 +118,23 @@ def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names, cl_path)
         fig.tight_layout()
         fig.savefig(save_path_fig + "fisher_norm_var" + str(a) + ".png",dpi=300)
 
-def cosmo_parameters_variation(theta, fg_parameters, freq_list, name_param, save_path_fig, save_path_dat):
+def cosmo_parameters_variation(cosmo_parameters, fg_parameters, freq_list, name_param, save_path_fig, save_path_dat):
 
     fig = plt.figure(figsize=(24, 13.5))
     plt.rc('xtick', labelsize=14)
     plt.rc('ytick', labelsize=14)
-    colors = ['darkred', 'darkorange', 'darkgreen', 'darkblue', 'darkviolet']
-    for i in range(len(theta)):
+    colors = ['darkred', 'darkgreen', 'darkblue']
+    n_params_cosmo = len(cosmo_parameters)
+    for i in range(n_params_cosmo):
         sigma = np.loadtxt(save_path_dat + "sigmas.dat")[:, i]
+        index_list = [1,2,4]
+        sigma_3_plot = [sigma[index] for index in index_list]
         ax = fig.add_subplot(231 + i)
         ax.grid(True,linestyle='--')
-        abs = np.linspace(theta[i] - 4 * np.max(sigma), theta[i] + 4 * np.max(sigma),  500)
-        for j in range(len(sigma)):
-            ord = gaussian(abs, theta[i], sigma[j])
-            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(j + 2),color=colors[j])
+        abs = np.linspace(cosmo_parameters[i] - 4 * np.max(sigma_3_plot), cosmo_parameters[i] + 4 * np.max(sigma_3_plot),  500)
+        for index in index_list:
+            ord = gaussian(abs, cosmo_parameters[i], sigma[index])
+            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(index + 2),color=colors[math.floor(index/2)])
         ax.set_title(name_param[i], fontsize=20)
         handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper right', fontsize=18)
@@ -140,15 +144,17 @@ def cosmo_parameters_variation(theta, fg_parameters, freq_list, name_param, save
     fig = plt.figure(figsize=(20, 20))
     plt.rc('xtick', labelsize=14)
     plt.rc('ytick', labelsize=14)
-    colors = ['darkred', 'darkorange', 'darkgreen', 'darkblue', 'darkviolet']
+    colors = ['darkred', 'darkgreen', 'darkblue']
     for i in range(len(fg_parameters)):
         sigma = np.loadtxt(save_path_dat + "sigmas.dat")[:, i + 6]
+        index_list = [1,2,4]
+        sigma_3_plot = [sigma[index] for index in index_list]
         ax = fig.add_subplot(331 + i)
         ax.grid(True, linestyle='--')
-        abs = np.linspace(fg_parameters[i] - 4 * np.max(sigma), fg_parameters[i] + 4 * np.max(sigma), 500)
-        for j in range(len(sigma)):
-            ord = gaussian(abs, fg_parameters[i], sigma[j])
-            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(j + 2),color=colors[j])
+        abs = np.linspace(fg_parameters[i] - 4 * np.max(sigma_3_plot), fg_parameters[i] + 4 * np.max(sigma_3_plot), 500)
+        for index in index_list:
+            ord = gaussian(abs, fg_parameters[i], sigma[index])
+            ax.plot(abs, ord/np.max(ord), label=r'$N_{freq}$ = %s' %(index + 2),color=colors[math.floor(index/2)])
         ax.set_title(name_param[i + 6], fontsize=20)
         handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, loc=(0.6,0.1), fontsize=24)

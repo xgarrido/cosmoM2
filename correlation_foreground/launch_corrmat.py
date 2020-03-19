@@ -27,7 +27,7 @@ names = ['H0', 'Ombh2', 'Omch2', 'As', 'ns', 'tau', 'atSZ', 'akSZ', 'ap', 'betap
 planck_parameters = np.array([67.4, 0.02207, 0.1196, 3.098, 0.9616, 0.097])
 
 fg_parameters = np.array([3.3, 1.66, 6.91, 2.07, 4.88, 2.2, 3.09])
-frequency_list = [145, 93, 39, 27, 225, 280]
+frequency_list = [145, 93, 225, 280, 27, 39]
 
 fsky = 0.4
 ell_max = 4500
@@ -36,8 +36,8 @@ ell_max = 4500
 ################################################################################
 
 calculate_data = False
-plot_correlation = True
-plot_fisher = True
+plot_correlation = False
+plot_fisher = False
 plot_cosmo_parameters = True
 
 if calculate_data:
