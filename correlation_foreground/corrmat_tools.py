@@ -15,20 +15,21 @@ def compute_fisher(freq_list, fsky, names, cl_path):
         np.load(cl_path + "deriv_" + names[i] + ".npy")
         for i in range(len(names))
     ]
-    C_ells = np.load(cl_path + "CL.npy")
+    C_ell = np.load(cl_path + "CL.npy")
 
     print("Importation : %s secondes" % (time.time() - start_time))
 
+    n_ell = C_ell.shape[0]
     n_params = len(deriv)
     n_freqs = len(freq_list)
     fisher = np.zeros((n_params, n_params))
 
     start_time = time.time()
 
-    for ell, C_ell in enumerate(C_ells):
-        ls = np.arange(len(C_ell) + 2)[2:]
+    for ell in range(n_ell):
+        ls = np.arange(n_ell + 2)[2:]
         pre_fact = fsky * (2 * ls + 1) / 2
-        inverse_c_ell = np.linalg.inv(C_ell[:n_freqs, :n_freqs])
+        inverse_c_ell = np.linalg.inv(C_ell[ell][:n_freqs, :n_freqs])
         for i in range(n_params):
             for j in range(n_params):
                 trace_mat_prod = np.trace(
@@ -132,8 +133,8 @@ def fisher_norm_evol(freq_list, name_param, save_path_fig, fsky, names,
               (time.time() - start_time_boucle))
         print("-" * 15)
         fig.tight_layout()
-        fig.savefig(os.path.join(save_path_fig, "fisher_norm_var", str(a),
-                                 ".png"),
+        fig.savefig(os.path.join(save_path_fig,
+                                 "fisher_norm_var{}.png".format(a)),
                     dpi=300)
 
 
