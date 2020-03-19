@@ -8,6 +8,6 @@
 
   If you need to generate again the datas, you just have to set the `calculate_data` variable to `True`.
 
-  Executing the script `launch_corrmat.py` will save some figures and the covariance matrix for each size of the frequency list in `/Saves/Figures`. It also saves the data in `/Saves/Data`
+  Executing the script `launch_corrmat.py` will save some figures and the covariance matrix for each size of the frequency list in `/saves/figures`. It also saves the data in `/Saves/Data`
   The covariance matrix for the 145 GHz frequency only is not relevant. This is why this script could also plot the different normalized Fisher matrix (by setting the `plot_fisher` variable to `True`).
   You can also have a plot showing the influence of adding frequencies on the constraints on the cosmological parameters (by setting `plot_cosmo_parameters` to `True`).
