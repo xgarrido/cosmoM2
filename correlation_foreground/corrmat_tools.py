@@ -25,16 +25,16 @@ def compute_fisher(freq_list, fsky, names, cl_path):
 
     start_time = time.time()
 
-    for k, C_ell in enumerate(C_ells):
+    for ell, C_ell in enumerate(C_ells):
         ls = np.arange(len(C_ell) + 2)[2:]
         pre_fact = fsky * (2 * ls + 1) / 2
         inverse_c_ell = np.linalg.inv(C_ell[:n_freqs, :n_freqs])
         for i in range(n_params):
             for j in range(n_params):
                 trace_mat_prod = np.trace(
-                    inverse_c_ell.dot(deriv[i][k][:n_freqs, :n_freqs].dot(
-                        inverse_c_ell.dot(deriv[j][k][:n_freqs, :n_freqs]))))
-                fisher[i, j] += pre_fact[k] * trace_mat_prod
+                    inverse_c_ell.dot(deriv[i][ell][:n_freqs, :n_freqs].dot(
+                        inverse_c_ell.dot(deriv[j][ell][:n_freqs, :n_freqs]))))
+                fisher[i, j] += pre_fact[ell] * trace_mat_prod
 
     print("Construction de Fisher : %s secondes" % (time.time() - start_time))
 
